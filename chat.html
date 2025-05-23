@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat WhatsApp Style</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e5ddd5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #075E54;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    #chat {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bubble {
+      max-width: 70%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 10px;
+      word-wrap: break-word;
+    }
+
+    .bubble.me {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+    }
+
+    .bubble.other {
+      align-self: flex-start;
+      background-color: white;
+    }
+
+    #input-area {
+      display: flex;
+      padding: 10px;
+      background-color: #f0f0f0;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      margin-right: 10px;
+      outline: none;
+    }
+
+    button {
+      background-color: #075E54;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    #emoji-container {
+      background-color: white;
+      padding: 5px;
+    }
+
+    emoji-picker {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>Simple WhatsApp Chat</header>
+
+  <div id="chat"></div>
+
+  <div id="emoji-container" style="display: none;">
+    <emoji-picker></emoji-picker>
+  </div>
+
+  <div id="input-area">
+    <input id="messageInput" placeholder="Type a message..." autofocus="on" />
+    <button onclick="toggleEmoji()"><i class="fa-solid fa-face-smile"></i></button>
+    <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+
+  <script>
+    // Ganti dengan konfigurasi Firebase kamu
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-2-57pQg7imMuRJ3-IXcNCCqmVK_UlvE",
+      authDomain: "websitechatting-27a3a.firebaseapp.com",
+      databaseURL: "https://websitechatting-27a3a-default-rtdb.firebaseio.com",
+      projectId: "websitechatting-27a3a",
+      storageBucket: "websitechatting-27a3a.firebasestorage.app",
+      messagingSenderId: "129560953968",
+      appId: "1:129560953968:web:d11f43cf758abaf044a0b5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Random user ID (sederhana untuk membedakan user)
+    const myId = Math.random().toString(36).substring(2, 10);
+
+    function sendMessage() {
+      const message = document.getElementById("messageInput").value;
+      if (message.trim() !== "") {
+        db.ref("chat").push({
+          text: message,
+          sender: myId,
+          timestamp: Date.now()
+        });
+        document.getElementById("messageInput").value = "";
+      }
+    }
+
+    const chatDiv = document.getElementById("chat");
+    db.ref("chat").on("child_added", snapshot => {
+      const msg = snapshot.val();
+      const p = document.createElement("div");
+      p.className = "bubble " + (msg.sender === myId ? "me" : "other");
+      p.textContent = msg.text;
+      chatDiv.appendChild(p);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+
+    // Emoji Picker
+    const picker = document.querySelector('emoji-picker');
+    picker.addEventListener('emoji-click', event => {
+      const emoji = event.detail.unicode;
+      document.getElementById("messageInput").value += emoji;
+    });
+
+    function toggleEmoji() {
+      const container = document.getElementById("emoji-container");
+      container.style.display = container.style.display === "none" ? "block" : "none";
+    }
+  </script>
+</body>
+</html>

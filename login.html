@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Chat WhatsApp Style</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e5ddd5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header {
+      background-color: #075E54;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+      width: 100%;
+      position: absolute;
+      top: 0;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      margin-top: 80px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      color: #075E54;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #075E54;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0b7a6b;
+    }
+
+    .register-link {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #075E54;
+    }
+
+    .register-link a {
+      color: #075E54;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Login - WhatsApp Chat</header>
+
+  <div class="login-container">
+    <h2>Masuk ke Akun Anda</h2>
+    <input id="email" type="email" placeholder="Email" autocomplete="off" />
+    <input id="password" type="password" placeholder="Password" autocomplete="off" />
+    <button onclick="login()">Login</button>
+
+    <div class="register-link">
+      Belum punya akun? <a href="register.html">Daftar di sini</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-2-57pQg7imMuRJ3-IXcNCCqmVK_UlvE",
+      authDomain: "websitechatting-27a3a.firebaseapp.com",
+      databaseURL: "https://websitechatting-27a3a-default-rtdb.firebaseio.com",
+      projectId: "websitechatting-27a3a",
+      storageBucket: "websitechatting-27a3a.firebasestorage.app",
+      messagingSenderId: "129560953968",
+      appId: "1:129560953968:web:0420733e3f88d41044a0b5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("Email dan Password harus diisi!");
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Login berhasil!");
+          window.location.href = "index.html"; // Ganti dengan halaman home kamu nanti
+        })
+        .catch(error => {
+          let message = "Terjadi kesalahan. Coba lagi.";
+
+          switch (error.code) {
+            case 'auth/user-not-found':
+              message = "Pengguna tidak ditemukan.";
+              break;
+            case 'auth/wrong-password':
+              message = "Password salah.";
+              break;
+            case 'auth/invalid-email':
+              message = "Format email tidak valid.";
+              break;
+          }
+
+          alert(message);
+        });
+    }
+  </script>
+
+</body>
+</html>
