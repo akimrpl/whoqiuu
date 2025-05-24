@@ -236,6 +236,103 @@
     emoji-picker {
       width: 100%;
     }
+
+    /* Responsiveness for mobile */
+    @media (max-width: 768px) {
+      #container {
+        flex-direction: column;
+        height: auto;
+      }
+    
+      #sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+        max-height: 40vh;
+        overflow-y: auto;
+      }
+    
+      #sidebar-top {
+        flex-grow: unset;
+      }
+    
+      #chat-container {
+        height: auto;
+        flex: 1;
+      }
+    
+      #chat-header {
+        font-size: 16px;
+        padding: 10px;
+      }
+    
+      #chat {
+        padding: 8px;
+        font-size: 14px;
+      }
+    
+      .bubble {
+        max-width: 85%;
+        font-size: 14px;
+      }
+    
+      .meta-info {
+        font-size: 11px;
+      }
+    
+      #input-area {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+      }
+    
+      #messageInput {
+        font-size: 14px;
+        width: 100%;
+        margin-right: 0;
+      }
+    
+      #sendBtn, #emojiBtn {
+        font-size: 14px;
+        padding: 10px;
+        width: 100%;
+        margin-right: 0;
+      }
+    
+      #logoutBtn {
+        width: calc(100% - 20px);
+        font-size: 14px;
+        margin: 10px;
+        padding: 10px;
+      }
+    
+      header {
+        font-size: 18px;
+        padding: 12px;
+      }
+    
+      #sidebar .friend {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+    
+      #sidebar .friend img {
+        width: 36px;
+        height: 36px;
+      }
+    
+      #sidebar .friend .last-message-time {
+        display: none;
+      }
+    
+      #emoji-container {
+        max-height: 200px;
+        overflow-y: scroll;
+      }
+    }
+    
   </style>
 </head>
 
