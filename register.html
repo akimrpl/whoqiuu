@@ -9,17 +9,23 @@
     * {
       box-sizing: border-box;
     }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #e5ddd5;
+    
+    html, body {
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e5ddd5;
+      overflow-x: hidden; /* Hindari scroll horizontal */
+    }
+    
+    body {
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       min-height: 100vh;
     }
-
+    
     header {
       background-color: #075E54;
       color: white;
@@ -28,24 +34,23 @@
       font-weight: bold;
       width: 100%;
     }
-
+    
     .register-container {
       background-color: white;
       padding: 30px 20px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 100%;
+      width: 90%;
       max-width: 400px;
       margin: 40px auto;
-      box-sizing: border-box;
     }
-
+    
     .register-container h2 {
       text-align: center;
       color: #075E54;
       margin-bottom: 20px;
     }
-
+    
     input {
       width: 100%;
       padding: 12px;
@@ -55,7 +60,7 @@
       font-size: 16px;
       outline: none;
     }
-
+    
     button {
       width: 100%;
       padding: 12px;
@@ -67,39 +72,39 @@
       cursor: pointer;
       margin-top: 10px;
     }
-
+    
     button:hover {
       background-color: #0b7a6b;
     }
-
+    
     .register-link {
       margin-top: 15px;
       text-align: center;
       font-size: 14px;
       color: #075E54;
     }
-
+    
     .register-link a {
       color: #075E54;
       text-decoration: none;
       font-weight: bold;
     }
-
+    
     .register-link a:hover {
       text-decoration: underline;
     }
-
+    
     @media (max-width: 500px) {
       .register-container {
         margin: 20px;
         padding: 25px 15px;
       }
-
+    
       input, button {
         font-size: 14px;
         padding: 10px;
       }
-
+    
       .register-container h2 {
         font-size: 20px;
       }
