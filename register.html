@@ -6,6 +6,10 @@
   <title>Daftar Akun - Who Qiuuu??</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #e5ddd5;
@@ -13,9 +17,7 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
+      min-height: 100vh;
     }
 
     header {
@@ -25,23 +27,23 @@
       text-align: center;
       font-weight: bold;
       width: 100%;
-      position: absolute;
-      top: 0;
     }
 
     .register-container {
       background-color: white;
-      padding: 30px;
+      padding: 30px 20px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 90%;
+      width: 100%;
       max-width: 400px;
-      margin-top: 80px;
+      margin: 40px auto;
+      box-sizing: border-box;
     }
 
     .register-container h2 {
       text-align: center;
       color: #075E54;
+      margin-bottom: 20px;
     }
 
     input {
@@ -85,6 +87,22 @@
 
     .register-link a:hover {
       text-decoration: underline;
+    }
+
+    @media (max-width: 500px) {
+      .register-container {
+        margin: 20px;
+        padding: 25px 15px;
+      }
+
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .register-container h2 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -162,7 +180,6 @@
           alert(message);
         });
     }
-
   </script>
 </body>
 </html>
