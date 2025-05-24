@@ -1,379 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Home - Who Qiuuu??</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #e5ddd5;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+    body, html {
+      margin: 0; padding: 0; height: 100vh; font-family: 'Segoe UI', sans-serif;
+      display: flex; flex-direction: column;
     }
-
     header {
-      background-color: #075E54;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-weight: bold;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 10;
+      background: #075E54; color: white; padding: 15px; text-align: center; font-weight: bold;
+      position: fixed; width: 100%; top: 0; z-index: 10;
     }
-
-    #container {
-      display: flex;
-      margin-top: 60px;
-      height: calc(100vh - 60px);
+    .container {
+      display: flex; flex: 1; height: 100%;
     }
-
-    #sidebar {
-      width: 300px;
-      background: white;
-      border-right: 1px solid #ccc;
-      display: flex;
-      flex-direction: column;
-      /* agar logout btn bisa di bawah */
-      justify-content: space-between;
-      overflow-y: hidden;
-      /* supaya gak scroll muncul di logout */
+    .friends-list {
+      flex: 1; overflow-y: auto; background: white; margin-top: 60px;
     }
-
-    #sidebar-top {
-      overflow-y: auto;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
+    .friend {
+      padding: 15px; border-bottom: 1px solid #ddd; cursor: pointer;
+      display: flex; align-items: center;
     }
-
-    #friendSearch {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      border: none;
-      border-bottom: 1px solid #ccc;
-      font-size: 16px;
-      outline: none;
-    }
-
-    #sidebar .friend {
-      padding: 15px;
-      border-bottom: 1px solid #ddd;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    #sidebar .friend:hover {
+    .friend:hover {
       background: #f5f5f5;
     }
-
-    #sidebar .friend .left {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-
-    #sidebar .friend img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
+    .friend img {
+      width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;
       object-fit: cover;
     }
-
-    #sidebar .friend .info {
-      flex: 1;
-      overflow: hidden;
-    }
-
-    #sidebar .friend .name {
-      font-weight: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    #sidebar .friend .last-message {
-      font-size: 13px;
-      color: #555;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    #logoutBtn {
-      background-color: #f44336;
-      color: white;
-      border: none;
-      margin: 10px;
-      padding: 12px 0;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      width: calc(100% - 20px);
-      align-self: center;
-    }
-
-    #logoutBtn:hover {
-      background-color: #d32f2f;
-    }
-
-    #chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: #ece5dd;
-    }
-
-    #chat-header {
-      background-color: #075E54;
-      color: white;
-      padding: 15px;
+    .friend .name {
       font-weight: bold;
     }
-
-    #chat {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+    .chat-window {
+      flex: 2; display: none; flex-direction: column; padding: 20px; background-color: #ece5dd;
     }
-
     .bubble {
-      max-width: 70%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 10px;
-      word-wrap: break-word;
-      position: relative;
+      max-width: 70%; padding: 10px; margin: 5px 0; border-radius: 10px;
+      word-wrap: break-word; position: relative;
     }
-
     .bubble.me {
-      align-self: flex-end;
-      background-color: #dcf8c6;
+      align-self: flex-end; background-color: #dcf8c6;
     }
-
     .bubble.other {
-      align-self: flex-start;
-      background-color: white;
-      border: 1px solid #ddd;
+      align-self: flex-start; background-color: white; border: 1px solid #ddd;
     }
-
-    .meta-info {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      color: gray;
-      margin-top: 5px;
-    }
-
-
-    .bubble.me .status-icon.sent {
-      color: gray;
-    }
-
-    .bubble.me .status-icon.delivered {
-      color: #4caf50;
-    }
-
-    .bubble.me .status-icon.read {
-      color: #2196f3;
-    }
-
     #input-area {
-      display: flex;
-      padding: 10px;
-      background-color: #f0f0f0;
+      display: flex; padding: 10px; background-color: #f0f0f0;
     }
-
     #messageInput {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 20px;
-      margin-right: 10px;
-      outline: none;
+      flex: 1; padding: 10px; font-size: 16px; border: none; border-radius: 20px;
+      margin-right: 10px; outline: none;
     }
-
-    #sendBtn,
-    #emojiBtn {
-      background-color: #075E54;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-right: 5px;
+    #sendBtn {
+      background-color: #075E54; color: white; border: none; padding: 10px 15px;
+      border-radius: 20px; font-size: 16px; cursor: pointer;
     }
-
-    #emoji-container {
-      background-color: white;
-      padding: 5px;
-      display: none;
+    .back-btn {
+      background: #075E54; color: white; border: none; padding: 10px 15px;
+      border-radius: 5px; cursor: pointer; margin-bottom: 15px;
     }
-
-    emoji-picker {
-      width: 100%;
-    }
-
-    /* Responsiveness for mobile */
-    @media (max-width: 768px) {
-      #container {
-        flex-direction: column;
-        height: auto;
-      }
-    
-      #sidebar {
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
-        max-height: 40vh;
-        overflow-y: auto;
-      }
-    
-      #sidebar-top {
-        flex-grow: unset;
-      }
-    
-      #chat-container {
-        height: auto;
-        flex: 1;
-      }
-    
-      #chat-header {
-        font-size: 16px;
-        padding: 10px;
-      }
-    
-      #chat {
-        padding: 8px;
-        font-size: 14px;
-      }
-    
-      .bubble {
-        max-width: 85%;
-        font-size: 14px;
-      }
-    
-      .meta-info {
-        font-size: 11px;
-      }
-    
-      #input-area {
-        flex-direction: column;
-        gap: 8px;
-        padding: 10px;
-      }
-    
-      #messageInput {
-        font-size: 14px;
-        width: 100%;
-        margin-right: 0;
-      }
-    
-      #sendBtn, #emojiBtn {
-        font-size: 14px;
-        padding: 10px;
-        width: 100%;
-        margin-right: 0;
-      }
-    
-      #logoutBtn {
-        width: calc(100% - 20px);
-        font-size: 14px;
-        margin: 10px;
-        padding: 10px;
-      }
-    
-      header {
-        font-size: 18px;
-        padding: 12px;
-      }
-    
-      #sidebar .friend {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-      }
-    
-      #sidebar .friend img {
-        width: 36px;
-        height: 36px;
-      }
-    
-      #sidebar .friend .last-message-time {
-        display: none;
-      }
-    
-      #emoji-container {
-        max-height: 200px;
-        overflow-y: scroll;
-      }
-    }
-    
   </style>
 </head>
-
 <body>
+  <header>Who Qiuuu??</header>
+  <div class="container">
+    <!-- Daftar Teman -->
+    <div class="friends-list" id="friends-list"></div>
 
-  <header>Who Qiuuu?? Chat - Pilih teman untuk mulai chat</header>
-
-  <div id="container">
-    <div id="sidebar">
-      <div id="sidebar-top">
-        <input type="text" id="friendSearch" placeholder="Cari teman..." />
-        <!-- Daftar teman akan dirender di sini -->
-      </div>
-
-      <button id="logoutBtn">Logout</button>
-    </div>
-
-    <div id="chat-container">
-      <div id="chat-header">Pilih teman untuk mulai chat</div>
-
-      <!-- Indikator "Sedang mengetik..." akan muncul di sini -->
-      <div id="typingIndicator" style="padding: 5px 15px; font-style: italic; color: #555; display: none;">Sedang
-        mengetik...</div>
-
-      <!-- Tempat pesan yang akan ditampilkan -->
-      <div id="chat"></div>
-
-      <div id="emoji-container">
-        <emoji-picker></emoji-picker>
-      </div>
-
-      <div id="input-area" style="display:none;">
+    <!-- Jendela Chat -->
+    <div class="chat-window" id="chat-window">
+      <button class="back-btn" id="back-btn">&larr; Back</button>
+      <div id="chat-header"></div>
+      <div id="chat-messages"></div>
+      <div id="input-area">
         <input id="messageInput" placeholder="Ketik pesan..." />
-        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-        <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+        <button id="sendBtn">Send</button>
       </div>
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  
   <script>
-    // Config Firebase kamu
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB-2-57pQg7imMuRJ3-IXcNCCqmVK_UlvE",
       authDomain: "websitechatting-27a3a.firebaseapp.com",
@@ -383,350 +96,95 @@
       messagingSenderId: "129560953968",
       appId: "1:129560953968:web:0420733e3f88d41044a0b5"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
     let currentUser = null;
-    let selectedFriend = null;
-    let chatId = null;
-    let messagesRef = null;
-    let allFriends = [];
-
-    const sidebarTop = document.getElementById('sidebar-top');
-    const friendSearchInput = document.getElementById('friendSearch');
+    let currentChatId = null;
+    const friendsListDiv = document.getElementById('friends-list');
+    const chatWindowDiv = document.getElementById('chat-window');
+    const chatMessagesDiv = document.getElementById('chat-messages');
     const chatHeader = document.getElementById('chat-header');
-    const chatDiv = document.getElementById('chat');
-    const inputArea = document.getElementById('input-area');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
-    const emojiBtn = document.getElementById('emojiBtn');
-    const emojiContainer = document.getElementById('emoji-container');
-    const picker = document.querySelector('emoji-picker');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const backBtn = document.getElementById('back-btn');
 
-    // === fitur status & preview ===
-    // Format timestamp ke HH:mm
-    function formatTime(ts) {
-      const d = new Date(ts);
-      return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-    }
-
-    function formatLastSeen(timestamp) {
-      if (!timestamp) return 'Offline';
-
-      const now = Date.now();
-      const diff = now - timestamp;
-
-      if (diff < 60000) return 'Online sekarang'; // <1 menit
-      if (diff < 3600000) return `Terakhir dilihat ${Math.floor(diff / 60000)} menit lalu`;
-      if (diff < 86400000) return `Terakhir dilihat ${Math.floor(diff / 3600000)} jam lalu`;
-
-      const d = new Date(timestamp);
-      return `Terakhir dilihat ${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-    }
-
-    // Dapatkan chatId unik antara 2 user
-    function getChatId(uid1, uid2) {
-      return uid1 < uid2 ? uid1 + '_' + uid2 : uid2 + '_' + uid1;
-    }
-
-    // Render daftar teman ke sidebar
-    function renderFriends(friends) {
-      // Hapus semua teman lama
-      while (sidebarTop.children.length > 1) {
-        sidebarTop.removeChild(sidebarTop.lastChild);
+    // Menangani perubahan status autentikasi
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
       }
+      currentUser = user;
+      loadFriends();  // Load daftar teman
+    });
 
-      friends.forEach(friend => {
-        const div = document.createElement('div');
-        div.classList.add('friend');
-
-        const leftDiv = document.createElement('div');
-        leftDiv.classList.add('left');
-
-        // Gambar default user
-        const img = document.createElement('img');
-        img.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-        img.alt = 'User';
-
-        const infoDiv = document.createElement('div');
-        infoDiv.classList.add('info');
-
-        const nameSpan = document.createElement('div');
-        nameSpan.classList.add('name');
-        nameSpan.textContent = friend.name;
-
-        const lastSeenDiv = document.createElement('div');
-        lastSeenDiv.style.fontSize = '12px';
-        lastSeenDiv.style.color = '#666';
-        lastSeenDiv.textContent = formatLastSeen(friend.lastSeen);
-
-        // Row untuk pesan terakhir dan timestamp
-        const lastMsgRow = document.createElement('div');
-        lastMsgRow.style.display = 'flex';
-        lastMsgRow.style.justifyContent = 'space-between';
-        lastMsgRow.style.alignItems = 'center';
-
-        const lastMsgText = document.createElement('div');
-        lastMsgText.classList.add('last-message');
-
-        if (friend.lastMessage) {
-          // Jika pesan terakhir dari currentUser, beri prefix "Kamu: "
-          const isFromMe = friend.lastMessage.sender === currentUser.uid;
-          lastMsgText.textContent = friend.lastMessage.text;
-
-          // Buat icon status centang hanya jika pesan terakhir dari kamu
-          if (isFromMe) {
-            const statusIcon = document.createElement('i');
-            if (friend.lastMessage.status === 'sent') {
-              statusIcon.className = 'fas fa-check'; // centang satu abu-abu
-              statusIcon.style.color = 'gray';
-            } else if (friend.lastMessage.status === 'delivered') {
-              statusIcon.className = 'fas fa-check-double'; // centang dua abu-abu
-              statusIcon.style.color = 'gray';
-            } else if (friend.lastMessage.status === 'read') {
-              statusIcon.className = 'fas fa-check-double'; // centang dua biru
-              statusIcon.style.color = '#2196f3';
-            }
-            // Tambahkan margin kiri agar tidak terlalu mepet
-            statusIcon.style.marginLeft = '5px';
-            lastMsgText.appendChild(statusIcon);
-          }
-        } else {
-          lastMsgText.textContent = '';
-        }
-
-        const lastMsgTime = document.createElement('div');
-        lastMsgTime.classList.add('last-message-time');
-        lastMsgTime.style.fontSize = '12px';
-        lastMsgTime.style.color = '#999';
-        lastMsgTime.style.marginLeft = '10px';
-        lastMsgTime.style.whiteSpace = 'nowrap';
-        lastMsgTime.textContent = friend.lastMessage && friend.lastMessage.timestamp
-          ? formatTime(friend.lastMessage.timestamp)
-          : '';
-
-        lastMsgRow.appendChild(lastMsgText);
-        lastMsgRow.appendChild(lastMsgTime);
-
-        infoDiv.appendChild(nameSpan);
-        infoDiv.appendChild(lastSeenDiv);
-        infoDiv.appendChild(lastMsgRow);
-
-        leftDiv.appendChild(img);
-        leftDiv.appendChild(infoDiv);
-
-        div.appendChild(leftDiv);
-
-        div.onclick = () => openChat(friend.uid, friend.name, friend.lastSeen);
-        sidebarTop.appendChild(div);
-      });
-    }
-
-    // Load teman dari DB
+    // Memuat daftar teman
     function loadFriends() {
-      db.ref('users').once('value', snapshot => {
-        const usersData = snapshot.val() || {};
-        allFriends = [];
-        const friendUids = [];
-        for (const uid in usersData) {
-          if (uid !== currentUser.uid) {
-            friendUids.push(uid);
-          }
-        }
-        Promise.all(friendUids.map(friendUid => {
-          const cid = getChatId(currentUser.uid, friendUid);
-          return db.ref(`users/${friendUid}`).once('value').then(userSnap => {
-            const userData = userSnap.val();
-            return db.ref(`chats/${cid}/messages`).limitToLast(1).once('value').then(snap => {
-              const msg = Object.values(snap.val() || {})[0];
-              return {
-                uid: friendUid,
-                name: userData.name || 'No Name',
-                lastSeen: userData.lastSeen || null,
-                lastMessage: msg || null
-              };
-            });
-          });
-        })).then(friendList => {
-          allFriends = friendList;
-          renderFriends(allFriends);
+      db.ref('users').once('value').then(snapshot => {
+        const users = snapshot.val() || {};
+        friendsListDiv.innerHTML = '';
+        Object.entries(users).forEach(([uid, userData]) => {
+          if (uid === currentUser.uid) return; // Jangan tampilkan diri sendiri
+          const friendDiv = document.createElement('div');
+          friendDiv.className = 'friend';
+          friendDiv.innerHTML = `
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" />
+            <div class="name">${userData.name || 'No Name'}</div>
+          `;
+          friendDiv.onclick = () => startChat(uid, userData.name);
+          friendsListDiv.appendChild(friendDiv);
         });
       });
     }
 
-    const typingIndicator = document.getElementById('typingIndicator');
-    let typingTimeout = null;
+    // Memulai chat dengan teman
+    function startChat(friendUid, friendName) {
+      currentChatId = getChatId(currentUser.uid, friendUid);
+      chatHeader.innerHTML = `Chat with ${friendName}`;
+      friendsListDiv.style.display = 'none';  // Sembunyikan daftar teman
+      chatWindowDiv.style.display = 'flex';   // Tampilkan jendela chat
+      loadMessages();
+    }
 
-    // Deteksi saat user mengetik
-    messageInput.addEventListener('input', () => {
-      if (!chatId) return;
+    // Mengambil ID chat unik antara dua user
+    function getChatId(uid1, uid2) {
+      return uid1 < uid2 ? uid1 + "_" + uid2 : uid2 + "_" + uid1;
+    }
 
-      db.ref(`chats/${chatId}/typing/${currentUser.uid}`).set(true);
-
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => {
-        db.ref(`chats/${chatId}/typing/${currentUser.uid}`).set(false);
-      }, 2000); // anggap user berhenti mengetik setelah 2 detik tidak input
-    });
-
-    // Open chat ke teman
-    function openChat(friendUid, friendName, lastSeen) {
-      selectedFriend = friendUid;
-      chatId = getChatId(currentUser.uid, friendUid);
-
-      chatHeader.innerHTML = `${friendName}<br><small style="font-weight:normal; font-size:12px;">${formatLastSeen(lastSeen)}</small>`;
-      chatDiv.innerHTML = '';
-      inputArea.style.display = 'flex';
-
-      if (messagesRef) {
-        messagesRef.off();
-      }
-
-      messagesRef = db.ref(`chats/${chatId}/messages`);
-      // Listen pesan baru
+    // Memuat pesan chat
+    function loadMessages() {
+      const messagesRef = db.ref(`chats/${currentChatId}`);
       messagesRef.on('child_added', snapshot => {
-        const message = snapshot.val();
-
-        // Update status delivered jika pesan dari teman dan status masih sent
-        if (message.sender !== currentUser.uid && message.status === 'sent') {
-          snapshot.ref.update({ status: 'delivered' });
-        }
-
-        displayMessage(message, snapshot.key);
-
-        // Update status read jika pesan dari teman dan belum read
-        if (message.sender !== currentUser.uid && message.status !== 'read') {
-          snapshot.ref.update({ status: 'read' });
-        }
+        const msg = snapshot.val();
+        const bubble = document.createElement('div');
+        bubble.className = msg.sender === currentUser.uid ? 'bubble me' : 'bubble other';
+        bubble.textContent = msg.text;
+        chatMessagesDiv.appendChild(bubble);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
       });
-
-      // Listen typing status dari teman
-      const friendTypingRef = db.ref(`chats/${chatId}/typing/${friendUid}`);
-      friendTypingRef.on('value', snap => {
-        const isTyping = snap.val();
-        typingIndicator.style.display = isTyping ? 'block' : 'none';
-      });
-    }
-
-    // Jika pindah chat, hapus status mengetik sebelumnya
-    if (typingTimeout) clearTimeout(typingTimeout);
-    if (chatId) {
-      db.ref(`chats/${chatId}/typing/${currentUser.uid}`).set(false);
-    }
-
-    // Tampilkan pesan ke chat div
-    function displayMessage(message) {
-      const div = document.createElement('div');
-      div.classList.add('bubble');
-      div.classList.add(message.sender === currentUser.uid ? 'me' : 'other');
-      div.textContent = message.text;
-      const infoRow = document.createElement('div');
-      infoRow.className = 'meta-info';
-
-      const timeSpan = document.createElement('span');
-      timeSpan.className = 'timestamp';
-      timeSpan.textContent = formatTime(message.timestamp);
-      infoRow.appendChild(timeSpan);
-
-      if (message.sender === currentUser.uid) {
-        const icon = document.createElement('i');
-
-        if (message.status === 'sent') {
-          icon.className = 'fas fa-check status-icon sent'; // centang 1 abu
-        } else if (message.status === 'delivered') {
-          icon.className = 'fas fa-check-double status-icon delivered'; // centang 2 abu
-        } else if (message.status === 'read') {
-          icon.className = 'fas fa-check-double status-icon read'; // centang 2 biru
-        } else {
-          icon.className = 'fas fa-check status-icon sent'; // default sent
-        }
-
-        infoRow.appendChild(icon);
-      }
-
-      div.appendChild(infoRow);
-
-
-      chatDiv.appendChild(div);
-      chatDiv.scrollTop = chatDiv.scrollHeight;
     }
 
     // Kirim pesan
-    sendBtn.onclick = () => {
-      const text = messageInput.value.trim();
-      if (!text || !chatId) return;
-
-      const message = {
-        sender: currentUser.uid,
-        text: text,
-        timestamp: Date.now(),
-        status: 'sent'
-      };
-
-      db.ref(`chats/${chatId}/messages`).push(message)
-        .then(() => {
-          messageInput.value = '';
-        })
-        .catch(() => alert('Gagal mengirim pesan.'));
-    };
-
-    // Toggle emoji picker
-    emojiBtn.onclick = () => {
-      emojiContainer.style.display = emojiContainer.style.display === 'none' ? 'block' : 'none';
-    };
-
-    // Saat emoji dipilih
-    picker.addEventListener('emoji-click', event => {
-      messageInput.value += event.detail.unicode;
-    });
-
-    // Filter teman saat search input berubah
-    friendSearchInput.addEventListener('input', () => {
-      const searchText = friendSearchInput.value.toLowerCase();
-      const filteredFriends = allFriends.filter(friend => friend.name.toLowerCase().includes(searchText));
-      renderFriends(filteredFriends);
-    });
-
-    // Logout function
-    logoutBtn.onclick = () => {
-      auth.signOut()
-        .then(() => {
-          alert('Berhasil Logout');
-          window.location.href = 'login.html';
-        })
-        .catch(error => {
-          alert('Gagal logout: ' + error.message);
+    sendBtn.onclick = function() {
+      const message = messageInput.value;
+      if (message.trim()) {
+        const messagesRef = db.ref(`chats/${currentChatId}`);
+        messagesRef.push().set({
+          sender: currentUser.uid,
+          text: message,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
         });
-    };
-
-    // Cek login
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        currentUser = user;
-
-        // Update lastSeen sekarang
-        db.ref('users/' + currentUser.uid).update({
-          lastSeen: Date.now()
-        });
-
-        loadFriends();
-
-        // Update lastSeen tiap 1 menit (opsional)
-        setInterval(() => {
-          db.ref('users/' + currentUser.uid).update({
-            lastSeen: Date.now()
-          });
-        }, 60000);
-
-      } else {
-        window.location.href = 'login.html';
+        messageInput.value = '';
       }
-    });
+    };
+
+    // Tombol back untuk kembali ke daftar teman
+    backBtn.onclick = function() {
+      friendsListDiv.style.display = 'block';  // Kembali ke daftar teman
+      chatWindowDiv.style.display = 'none';    // Sembunyikan jendela chat
+    };
   </script>
-
 </body>
-
 </html>
