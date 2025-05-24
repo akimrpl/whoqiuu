@@ -39,16 +39,17 @@
       height: calc(100vh - 60px);
     }
 
+    /* Sidebar (daftar teman) */
     #sidebar {
       width: 300px;
       background: white;
       border-right: 1px solid #ccc;
       display: flex;
       flex-direction: column;
-      /* agar logout btn bisa di bawah */
       justify-content: space-between;
       overflow-y: hidden;
-      /* supaya gak scroll muncul di logout */
+      display: block;
+      transition: transform 0.3s ease;
     }
 
     #sidebar-top {
@@ -56,6 +57,33 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+    }
+
+    #chat-container {
+      flex: 1;
+      display: none; /* Hide initially, only show when a chat is opened */
+      background-color: #ece5dd;
+      transition: all 0.3s ease;
+    }
+
+    /* Responsif untuk mobile */
+    @media (max-width: 768px) {
+      #sidebar {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: -100%;
+        z-index: 10;
+      }
+
+      #container.open-sidebar #sidebar {
+        left: 0;
+      }
+
+      #chat-container {
+        width: 100%;
+        left: 0;
+      }
     }
 
     #friendSearch {
@@ -132,13 +160,6 @@
 
     #logoutBtn:hover {
       background-color: #d32f2f;
-    }
-
-    #chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: #ece5dd;
     }
 
     #chat-header {
@@ -297,8 +318,11 @@
     let messagesRef = null;
     let allFriends = [];
 
-    const sidebarTop = document.getElementById('sidebar-top');
+    const container = document.getElementById('container');
+    const sidebar = document.getElementById('sidebar');
+    const chatContainer = document.getElementById('chat-container');
     const friendSearchInput = document.getElementById('friendSearch');
+    const sidebarTop = document.getElementById('sidebar-top');
     const chatHeader = document.getElementById('chat-header');
     const chatDiv = document.getElementById('chat');
     const inputArea = document.getElementById('input-area');
@@ -428,6 +452,11 @@
       });
     }
 
+    // Example: On mobile, toggle sidebar visibility
+    document.getElementById('openSidebarBtn').onclick = () => {
+      container.classList.toggle('open-sidebar');
+    };
+
     // Load teman dari DB
     function loadFriends() {
       db.ref('users').once('value', snapshot => {
@@ -478,6 +507,8 @@
     // Open chat ke teman
     function openChat(friendUid, friendName, lastSeen) {
       selectedFriend = friendUid;
+      container.classList.add('open-sidebar'); // Show chat and hide sidebar
+      chatContainer.style.display = 'block';  // Show chat container
       chatId = getChatId(currentUser.uid, friendUid);
 
       chatHeader.innerHTML = `${friendName}<br><small style="font-weight:normal; font-size:12px;">${formatLastSeen(lastSeen)}</small>`;
